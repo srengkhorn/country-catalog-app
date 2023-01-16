@@ -17,11 +17,12 @@
               placeholder="Search By Country Name"
             />
           </div>
-          <div class="py-4">
+
+          <div class="py-2 flex items-center justify-center">
             <button
-              class="border-solid border-2 border-indigo-500 p-2 w-24"
+              class="border-solid border-2 border-sky-700 p-2 w-24"
               :class="{
-                'border-none bg-gray-300 p-2 w-24': isFirstPage,
+                'bg-gray-300 border-sky-700 text-white button-alt p-2 w-24': isFirstPage,
               }"
               :disabled="isFirstPage"
               @click="prev"
@@ -29,9 +30,9 @@
               Prev
             </button>
             <button
-              class="border-solid border-2 border-indigo-600 p-2 w-24"
+              class="border-solid border-2 border-sky-700 p-2 w-24"
               :class="{
-                'border-none bg-gray-300 p-2 w-24': currentPage === item,
+                'bg-sky-700 border-sky-700 text-white button-alt p-2 w-24': currentPage === item,
               }"
               v-for="item in pageCount"
               :key="item"
@@ -41,15 +42,37 @@
               {{ item }}
             </button>
             <button
-              class="border-solid border-2 border-indigo-600 p-2 w-32"
+              class="border-solid border-2 border-sky-700 p-2 w-32"
               :class="{
-                'border-none bg-gray-300 p-2 w-24': isLastPage,
+                'bg-gray-300 border-sky-700 text-white button-alt p-2 w-24': isLastPage,
               }"
               :disabled="isLastPage"
               @click="next"
             >
               Next
             </button>
+          </div>
+
+          <div class="flex gap-x-2 flex-wrap items-center justify-center">
+            <button
+              :class="{
+                'bg-sky-700 text-white': orderNameBy === OrderBy.ASC,
+              }"
+              class="button-alt border-2 border-sky-700 hover:text- p-2 w-32"
+              @click="orderCountryNameBy(OrderBy.ASC)"
+            >
+              Ascending
+            </button>
+            <button
+              :class="{
+                'bg-sky-700 text-white': orderNameBy === OrderBy.DESC,
+              }"
+              class="button-alt border-2 border-sky-700 hover:text-white p-2 w-32"
+              @click="orderCountryNameBy(OrderBy.DESC)"
+            >
+              Descending
+            </button>
+            <!-- <button class="button" @click="reset">Reset</button> -->
           </div>
         </div>
       </header>
@@ -144,6 +167,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@headlessui/vue'
+import { _ } from 'lodash'
 
 const isOpen = ref(false)
 const selectedCountry = ref<Country>()
@@ -223,4 +247,21 @@ watch(searchCriteria, () => {
     displayCountries.value = countryData.value
   }
 })
+
+// Ordering
+enum OrderBy {
+  ASC = 'ASC',
+  DESC = 'DESC',
+}
+const orderNameBy = ref()
+
+const orderCountryNameBy = (order: OrderBy) => {
+  orderNameBy.value = order
+
+  if (order === OrderBy.ASC) {
+    displayCountries.value = _.orderBy(countryData.value, ['name.official'], 'asc')
+  } else if (order === OrderBy.DESC) {
+    displayCountries.value = _.orderBy(countryData.value, ['name.official'], 'desc')
+  }
+}
 </script>
