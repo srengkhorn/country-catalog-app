@@ -88,8 +88,16 @@
             </div>
             <div class="col-span-2 bg-slate-50 pl-5">
               <p class="font-bold truncate">{{ country.name.official }}</p>
-              <p>Description</p>
-              <button @click="readMoreModal(country)" class="rounded-full bg-emerald-300 pr-3 pl-3">
+              <p class="truncate text-xs">{{ country.cca2 }} | {{ country.cca3 }}</p>
+              <!-- <p class="truncate text-xs" v-if="country.name.nativeName.zho">
+                {{ country.name.nativeName.zho.official }}
+              </p> -->
+              <!-- <p class="truncate text-xs">{{ country.altSpellings }}</p> -->
+              <p class="truncate text-xs">{{ country.idd.suffixes }}</p>
+              <button
+                @click="readMoreModal(country)"
+                class="rounded-full truncate bg-emerald-300 pr-3 pl-3 text-xs"
+              >
                 Read more
               </button>
             </div>
@@ -258,10 +266,12 @@ const orderNameBy = ref()
 const orderCountryNameBy = (order: OrderBy) => {
   orderNameBy.value = order
 
-  if (order === OrderBy.ASC) {
-    displayCountries.value = _.orderBy(countryData.value, ['name.official'], 'asc')
-  } else if (order === OrderBy.DESC) {
-    displayCountries.value = _.orderBy(countryData.value, ['name.official'], 'desc')
-  }
+  countryData.value = _.orderBy(countryData.value, ['name.official'], OrderBy[order].toLocaleLowerCase())
+  page.value = 1
+  currentPage.value = 1
+  fetchData({
+  currentPage: page.value,
+  currentPageSize: pageSize.value,
+})
 }
 </script>
