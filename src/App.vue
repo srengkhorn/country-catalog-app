@@ -88,12 +88,30 @@
             </div>
             <div class="col-span-2 bg-slate-50 pl-5">
               <p class="font-bold truncate">{{ country.name.official }}</p>
-              <p class="truncate text-xs">{{ country.cca2 }} | {{ country.cca3 }}</p>
+              <p class="truncate text-xs">
+                <span class="font-bold truncate text-xs">{{ country.idd.root }}</span>
+                <span
+                  class="font-bold truncate text-xs"
+                  v-for="idd in country.idd.suffixes"
+                  :key="idd"
+                >
+                  <span v-if="country.idd.suffixes.length < 2">{{ idd }}</span>
+                </span>
+                {{ country.cca2 }} | {{ country.cca3 }}
+              </p>
+              
               <!-- <p class="truncate text-xs" v-if="country.name.nativeName.zho">
                 {{ country.name.nativeName.zho.official }}
               </p> -->
-              <!-- <p class="truncate text-xs">{{ country.altSpellings }}</p> -->
-              <p class="truncate text-xs">{{ country.idd.suffixes }}</p>
+
+              <p
+                class="truncate text-xs break-normal"
+                v-for="altSpelling in country.altSpellings.slice(1)"
+                :key="altSpelling"
+              >
+                {{ altSpelling }}
+              </p>
+              <p></p>
               <button
                 @click="readMoreModal(country)"
                 class="rounded-full truncate bg-emerald-300 pr-3 pl-3 text-xs"
@@ -197,6 +215,9 @@ onBeforeMount(async () => {
   const { data } = await axiosInstance.get('/all')
   countryData.value = data
   totalItems.value = countryData.value.length
+
+  orderCountryNameBy(OrderBy.ASC)
+  getDefault()
 })
 
 // Paging
@@ -266,12 +287,21 @@ const orderNameBy = ref()
 const orderCountryNameBy = (order: OrderBy) => {
   orderNameBy.value = order
 
-  countryData.value = _.orderBy(countryData.value, ['name.official'], OrderBy[order].toLocaleLowerCase())
+  countryData.value = _.orderBy(
+    countryData.value,
+    ['name.official'],
+    OrderBy[order].toLocaleLowerCase()
+  )
+
+  getDefault()
+}
+
+const getDefault = () => {
   page.value = 1
   currentPage.value = 1
   fetchData({
-  currentPage: page.value,
-  currentPageSize: pageSize.value,
-})
+    currentPage: page.value,
+    currentPageSize: pageSize.value,
+  })
 }
 </script>
