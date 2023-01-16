@@ -99,10 +99,12 @@
                 </span>
                 {{ country.cca2 }} | {{ country.cca3 }}
               </p>
-              
-              <!-- <p class="truncate text-xs" v-if="country.name.nativeName.zho">
-                {{ country.name.nativeName.zho.official }}
-              </p> -->
+
+              <span v-if="country.name.nativeName">
+                <p class="truncate text-xs" v-for="zho in country.name.nativeName.zho" :key="zho">
+                  {{ country.name.nativeName.zho.official }}
+                </p>
+              </span>
 
               <p
                 class="truncate text-xs break-normal"
@@ -112,11 +114,13 @@
                 {{ altSpelling }}
               </p>
               <p></p>
+            </div>
+            <div>
               <button
                 @click="readMoreModal(country)"
-                class="rounded-full truncate bg-emerald-300 pr-3 pl-3 text-xs"
+                class="rounded-full truncate bg-emerald-600 text-white p-1 mt-1 w-full text-xs"
               >
-                Read more
+                Read More
               </button>
             </div>
           </div>
@@ -154,13 +158,55 @@
               class="w-full max-w-md transform overflow-hidden bg-white p-6 text-left align-middle shadow-xl transition-all"
             >
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
-                {{ selectedCountry?.name.official }}
+                {{ selectedCountry?.name.official }} -
+                {{ selectedCountry?.translations.zho.official }}
               </DialogTitle>
               <div class="mt-2">
-                <p class="text-sm text-gray-500">
-                  Your payment has been successfully submitted. We’ve sent you an email with all of
-                  the details of your order.
-                </p>
+                <div class="grid grid-flow-col auto-cols-max gap-x-4">
+                  <div class="flex relative items-left text-center overflow-hidden">
+                    <img
+                      :src="selectedCountry?.flags.png"
+                      :alt="selectedCountry?.flag"
+                      class="object-cover h-20"
+                    />
+                  </div>
+                  <div class="text-sm">
+                    <p class="">
+                      <span class="font-bold">Area </span>
+                      <span> {{ selectedCountry?.area }}km²</span>
+                    </p>
+                    <p v-for="continent in selectedCountry?.continents" :key="continent">
+                      <span class="font-bold">Continent </span> <span> {{ continent }}</span>
+                    </p>
+                    <p>
+                      <span class="font-bold">Population </span>
+                      <span>{{ selectedCountry?.population }}</span>
+                    </p>
+                    <p>
+                      <span class="font-bold" v-if="selectedCountry?.capital">Capital </span>
+                      <span v-for="capital in selectedCountry?.capital" :key="capital">{{
+                        capital
+                      }}</span>
+                    </p>
+                  </div>
+                </div>
+                <div class="text-sm">
+                  <p>
+                    <span v-if="selectedCountry?.independent">An Independent Country </span>
+                    <span v-if="selectedCountry?.unMember">and one of UN Members, </span>
+                    <span>Alternative Spelling </span
+                    > <span
+                      v-for="altSpelling in selectedCountry?.altSpellings"
+                      :key="altSpelling"
+                      > {{ altSpelling }}, </span
+                    >
+                    <span>Timezone</span> <span v-for="timezone in selectedCountry?.timezones" :key="timezone">{{ timezone }}, </span>
+                    <span>Start of the Week is {{ selectedCountry?.startOfWeek }}</span>
+                  </p>
+                  <p>
+                    
+                  </p>
+                </div>
               </div>
 
               <div class="mt-4 grid justify-items-end">
